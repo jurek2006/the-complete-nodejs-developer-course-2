@@ -1,0 +1,22 @@
+{
+  "name": "notes-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurek2006/the-complete-nodejs-developer-course-2.git"
+  },
+  "author": "Jurek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jurek2006/the-complete-nodejs-developer-course-2/issues"
+  },
+  "homepage": "https://github.com/jurek2006/the-complete-nodejs-developer-course-2#readme",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
