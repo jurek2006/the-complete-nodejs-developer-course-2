@@ -28,3 +28,5 @@ Na przykładzie lodash
 Nazwa modułu dokładnie taka, jak pojawia się w package.json
 
 Kolejność jest taka, że node najpierw będzie szukał wewnątrz własnych modułów (core modules) - jak nie znajdzie odpowiedniego modułu, to szuka w node_modules
+
+#Automatyczne restartowanie aplikacji, kiedy zrobimy zmiany, za pomocą nodemon
