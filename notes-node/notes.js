@@ -1,6 +1,24 @@
 console.log('Starting node.js');
 
-module.exports.addNote = () => {
-    console.log('Add note');
-    return 'New note';
-};
+const addNote = (title, body) => {
+    console.log('Adding note', title, body);
+}
+
+const getNote = (title) => {
+    console.log('Getting note', title);
+}
+
+const removeNote = (title) => {
+    console.log('Removing note', title);
+}
+
+const getAll = () => {
+    console.log('getting all notes');
+}
+
+module.exports = {
+    addNote,
+    getNote,
+    removeNote,
+    getAll,
+}

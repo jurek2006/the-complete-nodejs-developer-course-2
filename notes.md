@@ -16,6 +16,16 @@ Module zawiera pole exports - wszystkie znajdujące się w nim obiekty, metody s
 Żeby wyeskportować coś z modułu używamy:
 _module.exports.add = (a, b) => a + b;_
 
+Można także eksportować następująco w ES6 (addNote to funkcja w tym module):
+module.exports = {
+    addNote: addNote,
+}
+
+a jeśli nazwy są identyczne to można nawet opuścić fragment i zrobić:
+module.exports = {
+    addNote
+}
+
 # Inicjalizacja NPM w projekcie
 _npm init_
 
@@ -41,3 +51,29 @@ Uruchamiamy app.js za pomocą polecenia:
 _nodemon app.js_
 
 #Input danych użytkownika
+##Przekazywanie argumentów podczas inicjalizacji aplikacji
+_node app.js list_
+list jest powyżej przekazanym argumentem
+
+Aby dostać się do tych parametrów
+_console.log(process.argv);_
+
+##Upraszczanie inputu za pomocą yarn
+_npm install yargs@4.7.1_
+
+_const yargs = require('yargs');_
+
+###Pobranie argv w wersji yargs
+_const argv = yargs.argv;_
+
+Możemy podawać pary klucz-wartość na różne sposoby:
+- node app.js add --title=secrets
+- node app.js add --title secrets
+- node app.js add --title "secrets from Andrew"
+I parsuje się to identycznie.
+I można się do nich dostać za pomocą:
+argv.title
+
+Pobieranie pierwszego argumentu (tutaj komendy):
+const argv = yargs.argv;
+let command = argv._[0];

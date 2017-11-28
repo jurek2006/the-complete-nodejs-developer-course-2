@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jurek2006/the-complete-nodejs-developer-course-2#readme",
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "yargs": "^4.7.1"
   }
 }
