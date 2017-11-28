@@ -30,3 +30,14 @@ Nazwa modułu dokładnie taka, jak pojawia się w package.json
 Kolejność jest taka, że node najpierw będzie szukał wewnątrz własnych modułów (core modules) - jak nie znajdzie odpowiedniego modułu, to szuka w node_modules
 
 #Automatyczne restartowanie aplikacji, kiedy zrobimy zmiany, za pomocą nodemon
+Nodemon to narzędzie wiersza poleceń. Aby zainstalować moduły uruchamiane z wiersza poleceń 
+_npm install nodemon -g_
+Flaga -g to skrót od global. Nie są one dodawane do projektu, tylko instalowane na urządzeniu. 
+
+Po zainstalowaniu mamy na komputerze nową komendę:
+_nodemon_
+
+Uruchamiamy app.js za pomocą polecenia:
+_nodemon app.js_
+
+#Input danych użytkownika
