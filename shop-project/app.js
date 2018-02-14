@@ -9,11 +9,13 @@
 // sprawdzenie stanu magazynu i wartości
 
 // node app.js sell -p komputer -a 2 //sprzedanie produktu komputer w ilości 2
-// node app.js return -o 123 //zwrot zamówienia o numerze 123
+// node app.js return -i 123 //zwrot zamówienia o numerze 123
 // node app.js cash //podanie stanu kasy
 // node app.js cash -s 100 //ustawienie stanu kasy na 100
-// node app.js order //lista zamówień
-// node app.js order -o 12//szczegóły zamówienia o id 12
+// node app.js orders //lista zamówień
+// node app.js orders -i 12 //szczegóły zamówienia o id 12
+// node app.js orders -p komputer //wyszukanie zamówień dla produktu komputer
+
 // node app.js warehouse //wylistowanie stanu magazynowego
 // node app.js warehouse -p komputer //stan magazynowy produktu komputer //--product
 // node app.js warehouse -p komputer -a 20 //stan magazynowy produktu komputer ustawiany na 20 szt. (utworzenie produktu jeśli nie ma o takiej nazwie) // --amount --price
@@ -27,7 +29,8 @@ const   fs = require('fs'),
 		yargs = require('yargs');
 
 const   shop = require('./shop'),
-        warehouse = require('./warehouse');
+        warehouse = require('./warehouse'),
+        cash = require('./cash');
 
 const argv = yargs
             .command('warehouse', 'Stan magazynu', {
@@ -59,6 +62,26 @@ const argv = yargs
                     alias: 'a'
                 }, 
             })
+            .command('orders', 'Zamówienia', {
+                product: {
+                    describe: 'Nazwa produktu do wyszukania zamówień',
+                    alias: 'p'
+                },
+                id: {
+                    describe: 'Id zamówienia dla którego mają być wyświetlone szczegóły (jeśli 0) to wszystkie zamówienia',
+                    alias: 'i'
+                }
+            })
+            .command('cash', 'Stan kasy', {
+                details: {
+                    describe: 'Wyświetl szczegóły wszystkich operacji kasowych',
+                    alias: 'd'
+                },
+                set: {
+                    describe: `Ustawienie aktualnego stanu kasy`,
+                    alias: 's'
+                }
+            })
             .help()
             .argv;
 
@@ -73,10 +96,17 @@ switch (command){
         console.log('Zwrot zamówienia');
         break;
     case 'cash':
-        console.log('Stan kasy');
+        if(argv.set){
+            // ustawianie salda kasy
+            cash.addCashOperation({
+                operation: "set cash saldo",
+                saldo: argv.set
+            })
+        }
+        cash.cashStatus(argv.details); //wyświetlenie aktualnego stanu kasy
         break;
-    case 'order':
-        console.log('Lista zamówień');
+    case 'orders':
+        shop.listOrders(argv.product, argv.id)
         break;
     case 'warehouse':
         if(!argv.product){

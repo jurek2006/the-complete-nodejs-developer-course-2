@@ -1,1 +1,1 @@
-[{"productName":"kabel 1m","amount":12,"price":2.99},{"productName":"kabel 1m","amount":1,"price":2.99},{"productName":"kabel 1m","amount":1.3,"price":2.99},{"productName":"drukarka","amount":1,"price":399}]
+[{"id":1,"productName":"komputer","amount":1,"price":3000},{"id":2,"productName":"drukarka","amount":2,"price":399}]

@@ -1,0 +1,1 @@
+[{"cashUpdate":3000,"orderId":1,"operation":"sold product","saldo":3000,"dateTime":"2018-02-14 21:08:46"},{"cashUpdate":798,"orderId":2,"operation":"sold product","saldo":3798,"dateTime":"2018-02-14 21:08:59"},{"operation":"set cash","saldo":1000,"dateTime":"2018-02-14 21:31:40"}]
