@@ -9,9 +9,7 @@ const fetchWarehouse = () => {
     }
 }
 
-const saveWarehouse = warehouse => {
-    fs.writeFileSync('warehouse-data.json', JSON.stringify(warehouse));
-}
+const saveWarehouse = warehouse => fs.writeFileSync('warehouse-data.json', JSON.stringify(warehouse));
 
 const findProduct = (name, warehouse) => {
     // zwraca produkt o nazwie name (normalnie powinien być jeden) z warehouse
@@ -83,7 +81,42 @@ const statusProduct = name => {
     if(foundProduct){
         console.log(`Stan magazynowy produktu ${foundProduct.name} - ilość: ${foundProduct.amount} szt., cena jednostkowa: ${foundProduct.price} zł`)
     } else {
-        console.log(`Nie znalezionu produktu ${name} w magazynie.`)
+        console.log(`Nie znalezionu produktu ${name} w magazynie.`);
+    }
+}
+
+const takeProduct = (name, amount) => {
+// funkcja sprawdzająca, czy produkt o nazwie name jest w magazynie w ilości nie mniejszej niż amount i czy ustawiona jest cena (jeśli nie, nie można sprzedać)
+// jeśli tak - zdjemuje zadaną ilość produktów ze stanu magazynu
+    const warehouse = fetchWarehouse();
+    const foundProduct = findProduct(name, warehouse);
+
+    if(foundProduct){
+        if(foundProduct.amount >= amount){
+            if( _.isNumber(foundProduct.price) && foundProduct.price >= 0){
+                // jeśli produkt ma zdefiniowaną cenę
+
+                // zdjęcie kupowanej ilości produktu ze stanu
+                foundProduct.amount -= amount;
+                saveWarehouse(warehouse);
+
+                // zwrócenie szczegółów realizowanego zamówienia
+                return {
+                    name: foundProduct.name,
+                    amount: amount,
+                    price: foundProduct.price
+                }
+            } else {
+                console.log(`Nie można sprzedać produktu o nazwie ${name} gdyż nie ustalono dla niego ceny.`);
+                return;
+            }
+        } else {
+            console.log(`Nie można sprzedać produktu ${name} w ilości ${amount} - w magazynie tylko ${foundProduct.amount} szt.`)
+            return;
+        }
+    } else {
+        console.log(`Nie znaleziono produktu o nazwie ${name} w magazynie.`);
+        return;
     }
 }
 
@@ -101,5 +134,6 @@ module.exports = {
     updateProduct,
     removeProduct,
     listWarehouse,
-    statusProduct
+    statusProduct,
+    takeProduct
 }

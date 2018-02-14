@@ -48,6 +48,17 @@ const argv = yargs
                     alias: 'r'
                 }
             })
+            .command('sell', 'Sprzedaż towaru', {
+                product: {
+                    describe: 'Nazwa towaru do sprzedania',
+                    demand: true,
+                    alias: 'p'
+                },
+                amount: {
+                    describe: 'Ilość sprzedawanego towaru (gdy nie podano jest to 1)',
+                    alias: 'a'
+                }, 
+            })
             .help()
             .argv;
 
@@ -55,7 +66,8 @@ let command = argv._[0];
 
 switch (command){
     case 'sell':
-        console.log('Sprzedaż towaru');
+        // sprzedaż towaru - domyślnie w ilości 1
+        shop.sellProduct(argv.product, argv.amount);
         break;
     case 'return':
         console.log('Zwrot zamówienia');
