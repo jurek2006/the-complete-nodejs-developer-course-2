@@ -20,6 +20,7 @@ const sellProduct = (product, amount = 1) =>{
 
     if(sold){
         // zapisanie zamówienia
+        // zamienić na UPDATE ZAMÓWIENIE
         let orders = fetchOrders();
         const id = orders.length + 1;
         orders.push({
@@ -43,10 +44,15 @@ const sellProduct = (product, amount = 1) =>{
 
 const printOrders = orders => {
 // wyświetla w konsoli wszystkie produkty z listy orders
-    orders.forEach((order) => {
-        console.log(`${order.id}.\t${order.productName}\t${order.amount}\t*\t${order.price} zł \t= ${order.amount * order.price} zł`);
-    });
-    console.log(`Wartość zamówień RAZEM: ${orders.reduce((previousValue, order) => previousValue + (order.amount * order.price), 0 )} zł`);
+    if(orders.length > 0){
+
+        orders.forEach((order) => {
+            console.log(`${order.id}.\t${order.productName}\t${order.amount}\t*\t${order.price} zł \t= ${order.amount * order.price} zł`);
+        });
+        console.log(`Wartość zamówień RAZEM: ${orders.reduce((previousValue, order) => previousValue + (order.amount * order.price), 0 )} zł`);
+    } else {
+        console.log(`Brak zamówienia o zadanych parametrach`);
+    }
 }
 
 const listOrders = (productName, orderId) => {
@@ -56,22 +62,74 @@ const listOrders = (productName, orderId) => {
         // informacje o zamówieniu o określonym id
         console.log(`Szczegóły zamówienia ${orderId}:`);
         console.log(`--------------------------------------`);
-        printOrders(orders.filter(order => order.id === orderId));
+        const foundOrders = orders.filter(order => order.id === orderId);
+        printOrders(foundOrders);
+        return(foundOrders);
     } else if(productName){
         // lista zamówień danego produktu
         console.log(`Lista zamówień produktu ${productName}:`);
         console.log(`--------------------------------------`);
-        printOrders(orders.filter(order => order.productName === productName));
+        const foundOrders = orders.filter(order => order.productName === productName)
+        printOrders(foundOrders);
+        return(foundOrders);
 
     } else {
         // lista wszystkich zamówień
         console.log(`Lista wszystkich zamówień:`);
         console.log(`--------------------------`);
         printOrders(orders);
+        return orders;
     }
+}
+
+const returnOrder = orderId => {
+// zwrot zamówienia o zadanym id
+
+    // Pobranie zamówienia - jeśli istnieje i sprawdzenie, czy już nie zostało zwrócone
+    const foundOrdersArr = listOrders(null, orderId);
+    if(foundOrdersArr.length === 1){
+    // jeśli znaleziono zamówienie
+    // Uaktualnienie stanu kasy - zapisanie operacji zwrotu
+    const order = foundOrdersArr[0];
+    
+        if(!order.returned){
+            // zamówienie nie ma statusu zwróconego
+            console.log(`Zwrot zamówienia o id ${orderId}`);
+            const operation = {
+                cashUpdate: - order.amount * order.price,
+                orderId: order.id,
+                operation: 'order returned'
+            }
+            cash.addCashOperation(operation);
+        
+            // Uaktualnienie stanu magazynu
+            warehouse.returnProduct(order);
+            
+            // Uaktualnienie stanu zamówienia - na zwrócone
+            // Zamienić na "UPDATE ZAMÓWIENIE"
+            
+            let orders = fetchOrders();
+            const orderToUpdate = orders.filter(curr => curr.id === order.id)[0];
+            if(orderToUpdate){
+                orderToUpdate.returned = true;
+            }
+            saveOrders(orders);
+        } else {
+            console.log(`Zamówienie o id ${orderId} ma już status zwróconego`);
+        }
+
+    } else if(foundOrdersArr.length === 0){
+        console.log(`Brak zamówienia o id ${orderId}`);
+    } else {
+        // jeśli znaleziono więcej niż jedno zamówienie o zadanym id to też jest błąd
+        console.log(`Nieznany błąd zwrotu zamówienia. Znaleziono więcej niż jedno zamówienie dla danego id`);
+    }
+
+
 }
 
 module.exports = {
     sellProduct, 
-    listOrders
+    listOrders,
+    returnOrder
 }

@@ -82,6 +82,13 @@ const argv = yargs
                     alias: 's'
                 }
             })
+            .command('return', 'Zwrot zamówienia', {
+                id: {
+                    describe: 'Id zamówienia do zwrotu',
+                    demand: true,
+                    alias: 'i'
+                }
+            })
             .help()
             .argv;
 
@@ -93,7 +100,7 @@ switch (command){
         shop.sellProduct(argv.product, argv.amount);
         break;
     case 'return':
-        console.log('Zwrot zamówienia');
+        shop.returnOrder(argv.id);
         break;
     case 'cash':
         if(argv.set){

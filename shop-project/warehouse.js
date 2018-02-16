@@ -130,10 +130,31 @@ const listWarehouse = () => {
     });
 }
 
+const returnProduct = (order) => {
+    // Uaktualnienie stanu magazynu przy zwrocie
+    const warehouse = fetchWarehouse();
+    const foundProduct = findProduct(order.productName, warehouse);
+    if(foundProduct){
+        // - jeśli produkt jest zdefiniowany w magazynie to zwiększenie ilości (zachowanie aktualnej ceny w magazynie)
+        
+        if(foundProduct.price){
+            // jeśli zdefiniowana w magazynie cena dla produktu - zostaje bez zmian
+            console.log(`Zwrot istniejącego towaru ${foundProduct.name} o zdefiniowanej cenie ${foundProduct.price}`);
+        } else {
+            // jeśli niezdefiniowana w magazynie cena dla produktu - zostaje ustawiona na cenę z zamówienia
+            console.log(`Zwrot istniejącego towaru ${foundProduct.name} bez zdefiniowanej ceny. Cena ustawiona na ${order.price}`);
+        }
+    } else {
+        // - jeśli produkt nie jest zdefiniowany to jego utworzenie i użycie zwróconej ilości oraz ceny z zamówienia
+        console.log(`Brak towaru ${order.productName} w magazynie - utworzenie`);
+    }
+}
+
 module.exports = {
     updateProduct,
     removeProduct,
     listWarehouse,
     statusProduct,
-    takeProduct
+    takeProduct,
+    returnProduct
 }

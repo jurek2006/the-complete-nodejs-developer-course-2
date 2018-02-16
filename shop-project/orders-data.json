@@ -1,1 +1,1 @@
-[{"id":1,"productName":"komputer","amount":1,"price":3000},{"id":2,"productName":"drukarka","amount":2,"price":399}]
+[{"id":1,"productName":"komputer","amount":1,"price":3000},{"id":2,"productName":"drukarka","amount":2,"price":399},{"id":3,"productName":"komputer","amount":1,"price":3000},{"id":4,"productName":"komputer","amount":1,"price":3000},{"id":5,"productName":"mysz","amount":3,"price":12.5,"returned":true},{"id":6,"productName":"mysz","amount":3,"price":12.5,"returned":true}]
