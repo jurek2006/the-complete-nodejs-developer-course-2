@@ -133,21 +133,32 @@ const listWarehouse = () => {
 const returnProduct = (order) => {
     // Uaktualnienie stanu magazynu przy zwrocie
     const warehouse = fetchWarehouse();
-    const foundProduct = findProduct(order.productName, warehouse);
+    let foundProduct = findProduct(order.productName, warehouse);
     if(foundProduct){
         // - jeśli produkt jest zdefiniowany w magazynie to zwiększenie ilości (zachowanie aktualnej ceny w magazynie)
         
         if(foundProduct.price){
-            // jeśli zdefiniowana w magazynie cena dla produktu - zostaje bez zmian
-            console.log(`Zwrot istniejącego towaru ${foundProduct.name} o zdefiniowanej cenie ${foundProduct.price}`);
+            // jeśli zdefiniowana w magazynie cena dla produktu - zostaje bez zmian, zwiększenie stanu magazynu o ilość produktu ze zwróconego zamówienia
+            foundProduct.amount += order.amount;
+            console.log(`Zwrócono istniejącego towaru ${foundProduct.name} w ilości ${order.amount} o zdefiniowanej cenie ${foundProduct.price}. Aktualny stan magazyny ${foundProduct.amount}`);
         } else {
             // jeśli niezdefiniowana w magazynie cena dla produktu - zostaje ustawiona na cenę z zamówienia
-            console.log(`Zwrot istniejącego towaru ${foundProduct.name} bez zdefiniowanej ceny. Cena ustawiona na ${order.price}`);
+            foundProduct.amount += order.amount;
+            foundProduct.price = order.price;
+            console.log(`Zwrot istniejącego towaru ${foundProduct.name} bez zdefiniowanej ceny. Cena ustawiona na ${foundProduct.price}`);
         }
     } else {
         // - jeśli produkt nie jest zdefiniowany to jego utworzenie i użycie zwróconej ilości oraz ceny z zamówienia
-        console.log(`Brak towaru ${order.productName} w magazynie - utworzenie`);
+        foundProduct = {
+            name: order.productName,
+            amount: order.amount,
+            price: order.price
+        }
+        console.log(`Brak towaru ${foundProduct.name} w magazynie - utworzenie. Stan magazynu po zwrocie ${foundProduct.amount}. Cena ${foundProduct.price}`);
     }
+
+    // zapisanie stanu magazyny dla produktu po zwrocie
+    updateProduct(foundProduct.name, foundProduct.amount, foundProduct.price); 
 }
 
 module.exports = {
