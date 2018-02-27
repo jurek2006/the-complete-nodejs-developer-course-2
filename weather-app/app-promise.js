@@ -19,6 +19,27 @@ const argv = yargs
     .alias('help', 'h')
     .argv;
 
+const getWeatherResponse = (response) => {
+// funkcja obsługi poprawnego zapytania (promisy) dla getWeather
+    const temperature = response.data.currently.temperature;
+    const apparentTemperature = response.data.currently.apparentTemperature;
+
+    console.log(`Aktualna temperatura ${temperature} st. C, temperatura odczuwalna ${apparentTemperature} st. C`);
+}
+
+const getWeatherErrorHandler = (error) => {
+// funkcja obsługi błędnego zapytania (promisy) dla getWeather
+    console.log('Błąd');
+    if(error.code === 'ENOTFOUND'){
+        console.log('Nieudane połączenie z serwerami weather API');
+    } else if (error.code === 'ENOENT'){
+        console.log('Nie można odczytać pliku aby wczytać domyślną lokalizację');
+    } else {
+        console.log(error.message);
+    }
+}
+    
+
 let address;
 
 if(argv.address){
@@ -59,18 +80,7 @@ if(argv.address){
         const weatherUrl = `https://api.darksky.net/forecast/c7cfcbce6684739088fa1d957987592e/${latitude},${longtitude}?units=si&lang=pl`;
 
         return axios.get(weatherUrl);
-    }).then((response) => {
-        const temperature = response.data.currently.temperature;
-        const apparentTemperature = response.data.currently.apparentTemperature;
-
-        console.log(`Aktualna temperatura ${temperature} st. C, temperatura odczuwalna ${apparentTemperature} st. C`);
-    }).catch((error) => {
-        if(error.code === 'ENOTFOUND'){
-            console.log('Nieudane połączenie z serwerami API');
-        } else {
-            console.log(error.message);
-        }
-    });
+    }).then(getWeatherResponse).catch(getWeatherErrorHandler);
 } else {
 // jeśli nie podano adresu w parametrze - wczytanie i użycie adresu domyślnego
 
@@ -91,21 +101,8 @@ if(argv.address){
         console.log(defaultAddress.formatted_address);
         const weatherUrl = `https://api.darksky.net/forecast/c7cfcbce6684739088fa1d957987592e/${defaultAddress.latitude},${defaultAddress.longtitude}?units=si&lang=pl`;
         return axios.get(weatherUrl);
-    }).then((response) => {
-        const temperature = response.data.currently.temperature;
-        const apparentTemperature = response.data.currently.apparentTemperature;
+    }).then(getWeatherResponse)
+    .catch(getWeatherErrorHandler);
 
-        console.log(`Aktualna temperatura ${temperature} st. C, temperatura odczuwalna ${apparentTemperature} st. C`);
-    }).catch(error => {
-        console.log('Błąd');
-        if(error.code === 'ENOTFOUND'){
-            console.log('Nieudane połączenie z serwerami weather API');
-        } else if (error.code === 'ENOENT'){
-            console.log('Nie można odczytać pliku aby wczytać domyślną lokalizację');
-        } else {
-            console.log(error.message);
-        }
-    });
-
-    
 }
+
