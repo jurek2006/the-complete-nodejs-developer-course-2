@@ -13,18 +13,63 @@ const argv = yargs
         d: {
             alias: 'default',
             describe: 'Zapisz adres jako domyślny'
+        },
+        f: {
+            alias: 'farenheitTemp',
+            describe: 'Wyświetl temperaturę w farenheitach zamiast w celsjuszach.'
+        },
+        p: {
+            alias: 'hours48',
+            describe: 'Wyświetl prognozę na 48h'
         }
     })
     .help()
     .alias('help', 'h')
     .argv;
 
+const getWeatherRequest = (latitude, longtitude, farenheitTemp = false) => {
+    // zapytanie do forecast.io o pogodę - zwraca promisę
+
+    const weatherUrl = `https://api.darksky.net/forecast/c7cfcbce6684739088fa1d957987592e/${latitude},${longtitude}?units=${farenheitTemp ? 'us' : 'si'}&lang=pl`;
+    return axios.get(weatherUrl);
+}
+
 const getWeatherResponse = (response) => {
 // funkcja obsługi poprawnego zapytania (promisy) dla getWeather
     const temperature = response.data.currently.temperature;
     const apparentTemperature = response.data.currently.apparentTemperature;
+    let unit;
+    if (response.data.flags.units === 'si') unit = 'C';
+    else if(response.data.flags.units === 'us') unit = 'F'
 
-    console.log(`Aktualna temperatura ${temperature} st. C, temperatura odczuwalna ${apparentTemperature} st. C`);
+    console.log(`Aktualna temperatura ${temperature} st. ${unit}, temperatura odczuwalna ${apparentTemperature} st. ${unit}`);
+    if(argv.hours48){
+        console.log('Prognoza na 48h: ');
+
+        const intlOptions = { 
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', 
+            hour12: false,
+            timeZone: 'Europe/Warsaw',
+            timeZoneName: 'short'
+        };
+
+        for(const hour in response.data.hourly.data){
+            
+            const date = new Intl.DateTimeFormat('pl-PL', intlOptions).format(new Date(response.data.hourly.data[hour].time * 1000)); 
+            const temperature = response.data.hourly.data[hour].temperature.toString().padStart(9);
+            const apparentTemperature = response.data.hourly.data[hour].apparentTemperature.toString().padStart(9);
+            const summary = response.data.hourly.data[hour].summary.toString().padEnd(30);
+
+            let precip = '';
+            const precipProbability = response.data.hourly.data[hour].precipProbability;
+            if(precipProbability > 0){
+                precip = `${parseInt(precipProbability * 100)}% ${response.data.hourly.data[hour].precipType}`
+            }
+
+            console.log(`${date} --- Temp.: ${temperature} st. ${unit}   Odczuwalna: ${apparentTemperature} st. ${unit}   ${summary} ${precip}`);
+        }
+    }
 }
 
 const getWeatherErrorHandler = (error) => {
@@ -77,9 +122,8 @@ if(argv.address){
         }
         
         // ZAPYTANIE O POGODĘ DO FORECAST.IO
-        const weatherUrl = `https://api.darksky.net/forecast/c7cfcbce6684739088fa1d957987592e/${latitude},${longtitude}?units=si&lang=pl`;
+        return getWeatherRequest(latitude, longtitude, argv.farenheitTemp);
 
-        return axios.get(weatherUrl);
     }).then(getWeatherResponse).catch(getWeatherErrorHandler);
 } else {
 // jeśli nie podano adresu w parametrze - wczytanie i użycie adresu domyślnego
@@ -99,8 +143,10 @@ if(argv.address){
     readDefaultAddress().then( defaultAddress => {
         console.log('Użycie adresu domyślnego:');
         console.log(defaultAddress.formatted_address);
-        const weatherUrl = `https://api.darksky.net/forecast/c7cfcbce6684739088fa1d957987592e/${defaultAddress.latitude},${defaultAddress.longtitude}?units=si&lang=pl`;
-        return axios.get(weatherUrl);
+
+        // ZAPYTANIE O POGODĘ DO FORECAST.IO
+        return getWeatherRequest(defaultAddress.latitude, defaultAddress.longtitude, argv.farenheitTemp);
+        
     }).then(getWeatherResponse)
     .catch(getWeatherErrorHandler);
 
